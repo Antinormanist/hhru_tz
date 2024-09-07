@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.database import get_db
 from app.models import User
 from app import schemes
-from app.routers.auth import get_current_user
 from app.utils import hash_password
 
 router = APIRouter(
@@ -20,7 +19,7 @@ def get_users(db: Session = Depends(get_db)):
     return db.query(User).all()
 
 
-@router.post('/', response_model=schemes.UserReturn)
+@router.post('/', status_code=status.HTTP_201_CREATED, response_model=schemes.UserReturn)
 def create_user(body: schemes.UserCreate, db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == body.username).first():
         raise HTTPException(status.HTTP_409_CONFLICT, f'user with username {body.username} already exists')
