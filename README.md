@@ -1,7 +1,7 @@
 # ENVIRONMENT YOU HAVE TO WRITE INSIDE YOUR .env FILE
 # DATABASE 
 - DBMS for example postgresql+psycopg
-WARNING!!! There is "postgresql_user" in docker-compose in "test: [ 'CMD-SHELL', 'pg_isready -U postgresql_user' ]". Rewrite it on your username
+- WARNING!!! There is "postgresql_user" in docker-compose in "test: [ 'CMD-SHELL', 'pg_isready -U postgresql_user' ]". Rewrite it on your DB_USER
 - DB_USER
 - DB_PASSWORD
 - DB_HOST
