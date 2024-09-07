@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  postgres:
+    image:
+      postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgresql_user']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  postgres_test:
+    image:
+      postgres
+    ports:
+      - "5431:5432"
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME_TEST}
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U postgresql_user' ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  app:
+    depends_on:
+      postgres:
+        condition:
+          service_healthy
+      postgres_test:
+        condition:
+          service_healthy
+    build:
+      .
+    volumes:
+      - ./:/app:ro
+    env_file:
+      .env
+    ports:
+      - "8000:8000"
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+volumes:
+  postgres_db:
